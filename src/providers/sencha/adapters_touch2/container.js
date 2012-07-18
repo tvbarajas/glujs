@@ -12,31 +12,13 @@ glu.regAdapter('container', {
     isChildArray:function (propName, value) {
         return propName === 'items' || propName === 'dockedItems';
     },
-//    isChildObject:function(propName){
-//        return propName ==='tbar' || propName === 'bbar';
-//    },
     beforeCollect:function(config){
        // debugger;
     },
     beforeCreate:function(config){
         //debugger;
     },
-    afterCreate:function(control,viewmodel)
-    {
-//        control.onItemAdd=function(item, index)
-//        {
-//            debugger;
-//            //Custom override
-//            this.doItemLayoutAdd(item, index);
-//
-//            if (this.initialized) {
-//                this.fireEvent('add', this, item, index);
-//            }
-//        };
-      //  control.setActiveItem(viewmodel.views._private.objs[0]);
-      //  debugger;
-      // control.doLayout();
-      // control.setActiveItem(1);
+    afterCreate:function(control,viewmodel) {
 
     },
     activeItemBindings:{
