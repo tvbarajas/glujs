@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2012 by CoNarrative
- */
+* Copyright (C) 2012 by CoNarrative
+*/
 /**
  * @class glu.extjs.adapters.panel
  * @author Mike Gai, Nick Tackes, Travis Barajas
@@ -10,35 +10,86 @@
  *
  */
 glu.regAdapter('panel', {
-    extend:'container',
-    applyConventions:function (config, viewmodel) {
+    extend : 'container',
+    applyConventions : function(config, viewmodel) {
         Ext.applyIf(config, {
-            collapsed:glu.conventions.expression(config.name + 'IsExpanded', {optional:true, not:true})
+            collapsed : glu.conventions.expression(config.name + 'IsExpanded', {
+                optional : true,
+                not : true
+            })
         });
         glu.provider.adapters.Container.prototype.applyConventions.apply(this, arguments);
     },
 
-    isChildArray:function (propName, value) {
+    isChildArray : function(propName, value) {
         return propName === 'items' || propName === 'dockedItems';
     },
 
-    isChildObject:function(propName){
-        return propName ==='tbar' || propName === 'bbar';
+    isChildObject : function(propName) {
+        return propName === 'tbar' || propName === 'bbar' || propName === 'buttons' || propName === 'fbar' || propName === 'lbar' || propName === 'rbar';
     },
 
-    tbarShortcut : function (value) {
+    tbarShortcut : function(value) {
         return {
-            xtype:'toolbar',
-            defaultType:'button',
-            items:value
+            xtype : 'toolbar',
+            defaultType : 'button',
+            items : value,
+            dock : 'top'
         }
     },
 
-    bbarShortcut : function (value) {
+    bbarShortcut : function(value) {
         return {
-            xtype:'toolbar',
-            defaultType:'button',
-            items:value
+            xtype : 'toolbar',
+            defaultType : 'button',
+            items : value,
+            dock : 'bottom'
+        }
+    },
+
+    buttonsShortcut : function(value) {
+        return {
+            xtype : 'toolbar',
+            defaultType : 'button',
+            items : value,
+            dock : 'bottom',
+            layout : {
+                // default to 'end' (right-aligned)
+                pack : 'end'
+            }
+        }
+    },
+
+    fbarShortcut : function(value) {
+        return {
+            xtype : 'toolbar',
+            defaultType : 'button',
+            items : value,
+            dock : 'bottom',
+            layout : {
+                // default to 'end' (right-aligned)
+                pack : 'end'
+            }
+        }
+    },
+
+    lbarShortcut : function(value) {
+        return {
+            xtype : 'toolbar',
+            defaultType : 'button',
+            items : value,
+            vertical : true,
+            dock : 'left'
+        }
+    },
+
+    rbarShortcut : function(value) {
+        return {
+            xtype : 'toolbar',
+            defaultType : 'button',
+            items : value,
+            vertical : true,
+            dock : 'right'
         }
     },
     /**
@@ -56,15 +107,16 @@ glu.regAdapter('panel', {
      *      }
      * Default: '{@close}'
      */
-    beforeCollect:function (config) {
+    beforeCollect : function(config) {
         //auto-add the close listener
         config.closeHandler = config.closeHandler || '@{close}';
     },
-    beforeCreate:function (config, vm) {
+    beforeCreate : function(config, vm) {
         config.listeners = config.listeners || {};
         //The ExtJS close cycle is too strange and must be normalized
         //Now it will simply create a close request instead of anything funny...
-        config.listeners.beforeclose = config.listeners.beforeclose || function (panel) {
+        config.listeners.beforeclose = config.listeners.beforeclose ||
+        function(panel) {
             // config.closeTask = config.closeTask || new Ext.util.DelayedTask();
             // config.closeTask.delay(1,function(){
             // panel.fireEvent('closerequest', this);
@@ -76,10 +128,10 @@ glu.regAdapter('panel', {
         };
 
     },
-    afterCreate:function (control, viewmodel) {
+    afterCreate : function(control, viewmodel) {
         //make sure windows close themselves when their matching view model closes...
         if (Ext.isFunction(control.close)) {
-            viewmodel.on('closed', function () {
+            viewmodel.on('closed', function() {
                 glu.log.debug('closed matching window since viewmodel was closed');
                 if (control.hidden) {
                     control.doClose();
@@ -90,7 +142,7 @@ glu.regAdapter('panel', {
         }
         var expandOrCollapseFactory = function(expanded) {
             return function(control) {
-                control.fireEvent ('expandorcollapse', control, expanded);
+                control.fireEvent('expandorcollapse', control, expanded);
             }
         };
         control.on('collapse', expandOrCollapseFactory(false));
@@ -100,14 +152,14 @@ glu.regAdapter('panel', {
      * @cfg {String} html
      * *one-way binding.* The inner html to place in the body
      */
-    htmlBindings:{
-        setComponentProperty:function (value, oldValue, options, control) {
+    htmlBindings : {
+        setComponentProperty : function(value, oldValue, options, control) {
             // if the value is an object
             control.update(value);
         }
     },
-    dataBindings:{
-        setComponentProperty:function (value, oldValue, options, control) {//TODO: should really be the html property
+    dataBindings : {
+        setComponentProperty : function(value, oldValue, options, control) {//TODO: should really be the html property
             // if the value is an object
             control.update(value);
         }
@@ -120,13 +172,13 @@ glu.regAdapter('panel', {
      *
      * **Convention:** @{*foo*IsCollapsed}
      */
-    collapsedBindings:{
+    collapsedBindings : {
         eventName : 'expandorcollapse',
-        eventConverter : function(control, expanded){
+        eventConverter : function(control, expanded) {
             return !expanded;
         },
         storeValueInComponentAs : 'collapsedActual',
-        setComponentProperty:function (value, oldValue, options, control) {
+        setComponentProperty : function(value, oldValue, options, control) {
             if (value == true) {
                 if (control.rendered) {
                     control.collapse(control.collapseDirection, control.animCollapse);
@@ -148,27 +200,46 @@ glu.regAdapter('panel', {
      * @cfg closable
      * *one-time binding ExtJS 3.x, one-way binding ExtJS 4.x*
      */
-    closableBindings:{
-        setComponentProperty:function (value, oldValue, options, control) {
+    closableBindings : {
+        setComponentProperty : function(value, oldValue, options, control) {
             if (Ext.getVersion().major > 3 && control.tab) {
                 control.tab.setClosable(value);
             }
         }
     },
 
-    activeItemBindings:{
+    activeItemBindings : {
+        storeValueInComponentAs : '_activeIndex',
         setComponentProperty:function (value, oldValue, options, control) {
-            //TODO: added this check due to headless access.  if fails because layout is not rendered
-            if (!control.getLayout() || !control.getLayout().setActiveItem) {
-                return;
+            if (value===undefined || value===-1) {
+                return; //nothing to do ... can't really "deselect" within ExtJS
             }
+            if (value.mtype) {
+                if (value.parentList === undefined) {
+                    throw "Attempted to set an activeItem to a view model that is not in a list";
+                }
+                control._activeItemValueType = 'viewmodel';
+                control._parentList = value.parentList;
+                //look up index...
+                value = value.parentList.indexOf(value);
+            }
+            control._changeOriginatedFromModel = true;
             control.getLayout().setActiveItem(value);
+        },
+        transformInitialValue : function (value, config, viewmodel){
+            if (value.mtype) {
+                if (value.parentList === undefined) {
+                    throw "Attempted to set an activeTab to a view model that is not in a list";
+                }
+                return value.parentList.indexOf(value);
+            }
+            return value;
         }
     },
 
     //TODO: Move into change tracked panel!!! BUt right now transformers don't supply bindings...
-    enableTrackingBindings:{
-        setComponentProperty:function (value, oldValue, options, control) {
+    enableTrackingBindings : {
+        setComponentProperty : function(value, oldValue, options, control) {
             var idx = value ? 0 : 1;
             var active = control.items.get(idx);
             if (control.rendered) {
@@ -178,9 +249,8 @@ glu.regAdapter('panel', {
             }
         }
     },
-
-    itemsBindings:{
-        custom:function (context) {
+    itemsBindings : {
+        custom : function(context) {
             if (context.control.layout != 'card') {
                 //do regular bindings
                 glu.provider.itemsHelper.bindItems(context, true);
@@ -191,27 +261,6 @@ glu.regAdapter('panel', {
             var cardPanel = context.control;
 
             glu.provider.itemsHelper.bindItems(context);
-            //do the items bindings using the helper
-
-            //now Activation stuff if really an activator...
-            if (activator.getActiveIndex) {
-                if (cardPanel.rendered == true) {
-                    cardPanel.getLayout().setActiveItem(activator.getActiveIndex());
-                } else {
-                    cardPanel.activeItem = activator.getActiveIndex();
-                }
-
-
-                //listen (automatically) to change event on activeIndex
-                activator.on('activeindexchanged', function (newvalue) {
-                    cardPanel._changeOriginatedFromModel = true;
-                    if (cardPanel.rendered == true) {
-                        cardPanel.getLayout().setActiveItem(activator.getActiveIndex());
-                    } else {
-                        cardPanel.activeItem = activator.getActiveIndex();
-                    }
-                });
-            }
         }
     }
 });

@@ -1,18 +1,19 @@
 glu.defView('examples.assets.main', {
-    title:'~~title~~',
+    title:'@{title}',
     layout:'border',
-    tbar : ['openOptions'],
+    tbar : ['cloneSet',{xtype:'tbfill'},'openOptions'],
     items:[
         {
             xtype:'tabpanel',
-            name:'assetSetList',
+            items:'@{assetSetList}',
+            activeTab:'@{assetSetWithFocus}',
             region:'center'
         },
         {
             name:'detail',
             xtype:'@{detail}',
             region:'east',
-            width:400
+            width: 300
         }
     ]
 });

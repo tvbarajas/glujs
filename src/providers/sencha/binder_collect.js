@@ -2,6 +2,23 @@
  * Copyright (C) 2012 by CoNarrative
  */
 Ext.ns('glu.provider.binder');
+
+/**
+ * @class glu.provider.Binder
+ * Takes care of binding views to view models. This is a gluJS internal and you should never have to use this class directly.
+ * ###Binding syntax
+ *
+ * * `!` Inverts a boolean value. Example: `collapsed:' {@!expanded}'`
+ * * `.` Allows you to naturally traverse into child objects. Example: `text:'{@activeItem.displayText}'`
+ *
+ * * `..`: Find the property at this level or any level above. Example: `save:'{@..save}'` will bind to the save command/function at this view model level and if it cannot find it, walk up the `parentVM` chain until it does find it.
+ * Now for the binding directives (these all come immediately after the `@` sign and before the `{` to indicate that they are about *how* and not *what* to bind.
+ * * `1` One-time binding - do not listen or update. Example: `value:'@1{displayText}'` will provide an initial value to the control but the control will never affect `displayText` and changes to `displayText` will never affect the `value`.
+ * * `>` One-way binding - update the view when the control changes, but not vice versa, making the control binding "read-only". Example: `value:'@>{displayText}'` will initially set the value to `displayText` and will track changes to that in the view model, but will never itself update the view model.
+ * * `?` Optional binding - do not raise an error if the matching view model property is not found. This is usally only used when working with view adapters (extending GluJS) as ordinarily you want to know when you have a "bad binding'. Example: `value:'@?{displayText}'` will let the application continue smoothely even if there is no `displayText` on the view model.
+ *
+ *
+ */
 Ext.apply(glu.provider.binder, {
 
     /**
@@ -57,7 +74,8 @@ Ext.apply(glu.provider.binder, {
                     var expr = origXtype.substring(2, origXtype.length - 1);
                     var split = this.traverseExpression(viewmodel, expr);
                     var target = split.model[split.prop];
-                    var spec = glu.getViewSpec(target, viewmodel.ns, target.viewmodelName, config);
+                    var viewname = target.viewmodelName + (config.viewMode?'_'+config.viewMode:'');
+                    var spec = glu.getViewSpec(target, viewmodel.ns, viewname, config);
                     if (Ext.isString(spec))
                         throw spec;
                     //just inline the view and prepare for binding...
@@ -69,7 +87,7 @@ Ext.apply(glu.provider.binder, {
                 } else {
                     //see if it is a 'local type' and if so inline it
                     var spec = glu.getViewSpec(viewmodel, viewmodel.ns, origXtype, config);
-                    if (!Ext.isString(spec)) {//getViewSpec returns error strings when it can't process the request. Deal with it.
+                    if (!Ext.isString(spec)) {//getViewSpec returns error strings when it can't process the request. I wrote it but do not necessarily approve.
                         config = spec;
                         config.xtype = config.xtype || defaultTypeForItems || adapterSpecificDefaultXtype || 'panel';
                     } else {
@@ -197,7 +215,7 @@ Ext.apply(glu.provider.binder, {
             var isEventListener = propName == 'handler' || glu.symbol(propName).endsWith('Handler');
 
             //Finally, process this individual property binding
-            this.collectPropertyBinding(propName, config, viewmodel, isEventListener, isChildArray);
+            this.collectPropertyBinding(propName, config, viewmodel, isEventListener, isChildArray, xtypeAdapter);
         }
 
         if (glu.isFunction(xtypeAdapter.beforeCollectChildren)) {
@@ -305,7 +323,7 @@ Ext.apply(glu.provider.binder, {
     /*
      * Collect and activate property binding on the config
      */
-    collectPropertyBinding:function (propName, config, viewmodel, isEventListener, isChildArray) {
+    collectPropertyBinding:function (propName, config, viewmodel, isEventListener, isChildArray, xtypeAdapter) {
         var propValue = config[propName];
         var binding = this.readPropertyBinding(propValue, viewmodel, isEventListener);
         if (binding == null) {
@@ -357,6 +375,14 @@ Ext.apply(glu.provider.binder, {
             //don't actually want it being initialized with a bunch of view/data/whatever models!
             //These will be added later by the item binder
             binding.initialValue = [];
+        }
+
+        //transform initial value if requested by adapter
+        if (xtypeAdapter) {
+            var propBindings = xtypeAdapter[binding.controlPropName + 'Bindings'];
+            if (propBindings && propBindings.transformInitialValue) {
+                binding.initialValue = propBindings.transformInitialValue(binding.initialValue, config, binding.model);
+            }
         }
 
         //set initial value
