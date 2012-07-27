@@ -12,7 +12,12 @@
 	    {
 		    "path": "app.js",
 		    "update": "delta"
+	    },
+	    {
+		    "path":"locale/locale_en.js",
+		    "update":"delta"
 	    }
+
     ],
     "css": [
         {

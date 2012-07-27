@@ -1,3 +1,5 @@
-glu.defModel('examples.assets.main',{
-  isFoo:true
+glu.defModel('examples.assets.main', {
+    isFoo:true,
+    searchmessage:'',
+    currentSearch:''
 });

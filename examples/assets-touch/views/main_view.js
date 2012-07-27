@@ -2,7 +2,14 @@ glu.defView('examples.assets.main', {
     scrollable:true,
     cls:'x-content',
     items:[
-        {html:'<h1>Hello</h1>'}
+        {
+            name:'searchmessage',
+            xtype:'textfield'
+        },
+        {
+            xtype:'label',
+            html:'@{searchmessage}'
+        }
 //        {
 //            xtype:'titlebar',
 //            docked:'top',

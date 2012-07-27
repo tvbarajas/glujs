@@ -5,6 +5,9 @@ Ext.ns('glu.provider.adapters');
 glu.regAdapter = glu.provider.regAdapter;
 
 glu.regAdapter('component', {
+    applyConventions:function (config, viewmodel) {
+        //glu.deepApplyIf(config, pattern);
+    },
     //is the property an array to walk?
     isChildArray:function () {
         return false;
