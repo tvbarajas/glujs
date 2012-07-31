@@ -13,7 +13,7 @@ describe('UI Control: checkboxfield', function () {
                 },
                 viewmodels:{
                     tester:{
-                        filterOption1:undefined
+                        filterOption1:false
                     }
                 },
                 views:{
@@ -27,7 +27,6 @@ describe('UI Control: checkboxfield', function () {
                             {   id:itemId,
                                 name:'filterOption1',
                                 xtype:'checkboxfield'
-                                checked:
                             }
                         ]
                     }
@@ -50,67 +49,9 @@ describe('UI Control: checkboxfield', function () {
             expect(Ext.getCmp(itemId).getChecked()).toEqual(false)
         });
 
-        ShouldHave('set the viewmodel filterOption1 to true in response to the UI',function(){
-            Ext.getCmp(itemId).setChecked(true);
-            expect(vm.filterOption1).toEqual(true);
-        });
-//        ShouldHave('set the viewmodel filterOption1 to false in response to the UI',function(){
-//            Ext.getCmp(itemId).uncheck()
-//            expect(vm.filterOption1).toEqual(false);
+//        ShouldHave('set the viewmodel filterOption1 to true in response to the UI',function(){
+//            Ext.getCmp(itemId).setChecked(true);
+//            expect(vm.filterOption1).toEqual(true);
 //        });
     });
-//    Given('a view with checkboxfield that has value property bound to a viewmodel property', function () {
-//        var view, vm, itemId;
-//        itemId = Ext.id();
-//        Meaning(function () {
-//            testNs = {
-//                locale:{
-//                    filterOption1:'Filter by Active'
-//                },
-//                models:{
-//
-//                },
-//                viewmodels:{
-//                    tester:{
-//                        filterOption1:'',
-//                        filterOption1Value:'filterOption1'
-//                    }
-//                },
-//                views:{
-//                    tester:{
-//                        xtype:'container',
-//                        items:[
-//                            {
-//                                xtype:'container'
-//
-//                            },
-//                            {   id:itemId,
-//                                name:'filterOption1',
-//                                xtype:'checkboxfield',
-//                                value:'@{filterOption1Value}'
-//
-//                            }
-//                        ]
-//                    }
-//                }
-//            };
-//
-//            vm = glu.model({
-//                ns:'testNs',
-//                mtype:'tester'
-//            });
-//            vm.init();
-//            view = glu.view(vm, 'testNs', 'tester');
-//
-//        });
-//
-//        ShouldHave('set the checkbox value to the initial viewmodel property.', function () {
-//            expect(Ext.getCmp(itemId).getValue()).toEqual('filterOption1');
-//        });
-//
-//        ShouldHave('set the checkbox value to false in response to a viewmodel change.',function(){
-//           vm.set('filterOption1', true);
-//           expect(Ext.getCmp(itemId).getChecked()).toEqual(true);
-//        });
-//    });
 });
