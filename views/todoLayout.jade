@@ -1,8 +1,15 @@
 extends layout
 block append head
-    link(href='app.css', media="screen", rel="stylesheet", type="text/css")
-    script(src='viewmodels/main_vm.js')
-    script(src='viewmodels/todoitem_vm.js')
-    script(src='views/main_view.js')
-    script(src='views/todoitem_view.js')
-    script(src='locale/locale_en.js')
+    - if (extjs_version == 'touch')
+        link(href='touch/app.css', media="screen", rel="stylesheet", type="text/css")
+        script(src='viewmodels/main_vm.js')
+        script(src='viewmodels/todoitem_vm.js')
+        script(src='views/touch/main_view.js')
+        script(src='locale/locale_en.js')
+    - else
+        link(href='app.css', media="screen", rel="stylesheet", type="text/css")
+        script(src='viewmodels/main_vm.js')
+        script(src='viewmodels/todoitem_vm.js')
+        script(src='views/main_view.js')
+        script(src='views/todoitem_view.js')
+        script(src='locale/locale_en.js')

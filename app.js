@@ -71,10 +71,9 @@ app.get('/examples/assets-touch',function(req,res){
     res.render('asset-touch.jade',{locals:{extjs_version: 'touch'}});
 });
 
-app.get('/examples/senchatouch/school/index.html',function(req,res){
-    res.render('senchatouch-school-1.jade',{title:''});
+app.get('/examples/todomvc/touch', function (req, res) {
+    res.render('todo.jade', {locals:{extjs_version: 'touch'}});
 });
-
 //startup
 var port = process.env.PORT || 8123;
 app.listen(port, function () {
