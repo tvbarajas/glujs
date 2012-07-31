@@ -22,7 +22,7 @@ glu.regAdapter('panel', {
     },
 
     isChildArray : function(propName, value) {
-        return propName === 'items' || propName === 'dockedItems';
+        return propName=='editors' || propName === 'items' || propName === 'dockedItems';
     },
 
     isChildObject : function(propName) {
@@ -108,6 +108,8 @@ glu.regAdapter('panel', {
      * Default: '{@close}'
      */
     beforeCollect : function(config) {
+        glu.provider.adapters.Container.prototype.beforeCollect.apply(this, arguments);
+        this.checkForEditors(config, {title: function(control){return control.header.titleCmp.textEl;}});
         //auto-add the close listener
         config.closeHandler = config.closeHandler || '@{close}';
     },
@@ -129,6 +131,7 @@ glu.regAdapter('panel', {
 
     },
     afterCreate : function(control, viewmodel) {
+        glu.provider.adapters.Container.prototype.afterCreate.apply(this, arguments);
         //make sure windows close themselves when their matching view model closes...
         if (Ext.isFunction(control.close)) {
             viewmodel.on('closed', function() {
@@ -147,6 +150,18 @@ glu.regAdapter('panel', {
         };
         control.on('collapse', expandOrCollapseFactory(false));
         control.on('expand', expandOrCollapseFactory(true));
+
+        if (control._bindingMap && control._bindingMap.activeItem!==undefined) {
+            control.addActual = control.add;
+            control.add = function(index, item) {
+                item.on('render', function() {
+                    item.getEl().on('click', function() {
+                        control.fireEvent('activeitemchangerequest', control, control.items.indexOf(item));
+                    });
+                });
+                control.addActual(index, item);
+            }
+        }
     },
     /**
      * @cfg {String} html
@@ -209,6 +224,10 @@ glu.regAdapter('panel', {
     },
 
     activeItemBindings : {
+        eventName:'activeitemchangerequest',
+        eventConverter:function (control, idx) {
+            return control._activeItemValueType==='viewmodel'?control._parentList.getAt(idx):idx;
+        },
         storeValueInComponentAs : '_activeIndex',
         setComponentProperty:function (value, oldValue, options, control) {
             if (value===undefined || value===-1) {
@@ -223,8 +242,12 @@ glu.regAdapter('panel', {
                 //look up index...
                 value = value.parentList.indexOf(value);
             }
+            var oldItem = oldValue==-1?null : control.items.getAt(oldValue);
             control._changeOriginatedFromModel = true;
-            control.getLayout().setActiveItem(value);
+            if( control.getLayout().type == 'card')
+                control.getLayout().setActiveItem(value);
+            else
+                control.fireEvent('activeitemchanged', control, control.items.getAt(value), oldItem);
         },
         transformInitialValue : function (value, config, viewmodel){
             if (value.mtype) {
