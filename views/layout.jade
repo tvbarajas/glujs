@@ -1,16 +1,16 @@
 html
     head
         block head
+            - if (extjs_version == 3)
+                link(href='/lib/extjs-3.x/resources/css/ext-all.css', media="screen", rel="stylesheet", type="text/css")
+                script(src='/lib/extjs-3.x/adapter/ext/ext-base-debug.js')
+                script(src='/lib/extjs-3.x/ext-all-debug.js')
             - if (extjs_version == 4)
                 link(href='/lib/extjs-4.x/resources/css/ext-all.css', media="screen", rel="stylesheet", type="text/css")
                 script(src='/lib/extjs-4.x/bootstrap.js')
             - if (extjs_version == 'touch')
                 link(href='/lib/senchatouch-2.0.x/resources/css/sencha-touch.css', media="screen", rel="stylesheet", type="text/css")
                 script(src='/lib/senchatouch-2.0.x/sencha-touch-all-debug.js')
-            - else
-                link(href='/lib/extjs-3.x/resources/css/ext-all.css', media="screen", rel="stylesheet", type="text/css")
-                script(src='/lib/extjs-3.x/adapter/ext/ext-base-debug.js')
-                script(src='/lib/extjs-3.x/ext-all-debug.js')
             - if (extjs_version == 4 ||  extjs_version == 3)
                 script(src='/src/providers/sencha/setup.js')
                 script(src='/src/providers/sencha/provider.js')
@@ -42,6 +42,10 @@ html
                 script(src='/src/providers/sencha/adapters_extjs/tabpanel.js')
                 script(src='/src/providers/sencha/adapters_extjs/textfield.js')
                 script(src='/src/providers/sencha/adapters_extjs/toolbar.js')
+            - if(extjs_version == 3)
+                script(src='/src/providers/sencha/adapters_extjs4/button-extra.js')
+                script(src='/src/providers/sencha/adapters_extjs4/grid.js')
+                script(src='/src/providers/sencha/adapters_extjs4/paging.js')
             - if (extjs_version == 4)
                 script(src='/src/providers/sencha/adapters_extjs4/button-extra.js')
                 script(src='/src/providers/sencha/adapters_extjs4/grid.js')
@@ -70,10 +74,7 @@ html
                 // script(src='/src/providers/sencha/adapters_touch2/list.js')
 
 
-            - else
-                script(src='/src/providers/sencha/adapters_extjs4/button-extra.js')
-                script(src='/src/providers/sencha/adapters_extjs4/grid.js')
-                script(src='/src/providers/sencha/adapters_extjs4/paging.js')
+
             script(src='/src/glu.js')
             script(src='/src/symbol.js')
             script(src='/src/conventions.js')
