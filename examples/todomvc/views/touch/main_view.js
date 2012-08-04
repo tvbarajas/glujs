@@ -1,6 +1,9 @@
 glu.defView('todo.main', {
-    scrollable:true,
-    cls:'x-content',
+    centered:false,
+    border:false,
+    layout:{
+        type:'vbox'
+    },
     items:[
         {
             docked:'top',
@@ -13,47 +16,40 @@ glu.defView('todo.main', {
             ]
         },
         {
-            layout:{
-                type:'vbox',
-                align:'stretch'
-            },
+            layout:'hbox',
+            height:50,
             items:[
-                {  //header
-                    layout:'hbox',
-                    //height:25,
-                    items:[
-                        {
-                            xtype:'checkboxfield',
-                            value:'@>{allVisibleItemsAreCompleted}',
-                            disabled:'@{!completeAllIsDisabled}',
-                            width:20,
-                            //handler : '@{batchComplete}'
-                            listeners:{
-                                change:'@{batchComplete}'
-                            }
-                        },
-                        {
-                            xtype:'textfield',
-                            value:'@{newItemText}',
-                            cls:'todo-newItemText',
-                            emptyText:'~~newItemText~~',
-                            enterKeyHandler:'@{addNewItem}',
-                            width:300
-                        }
-                    ]
+                {
+                    xtype:'checkboxfield',
+                    value:'@>{allVisibleItemsAreCompleted}',
+                    disabled:'@{!completeAllIsDisabled}',
+                    width:50,
+                    height:40,
+                    //handler : '@{batchComplete}'
+                    listeners:{
+                        change:'@{batchComplete}'
+                    }
                 },
                 {
-                    html:'boo'
-                },
-                {
-                    layout:'vbox',
-                    items:'@{todoList}',
-                    height:200
+                    xtype:'textfield',
+                    value:'@{newItemText}',
+                    cls:'todo-newItemText',
+                    emptyText:'~~newItemText~~',
+                    enterKeyHandler:'@{addNewItem}',
+                    width:300,
+                    height:40
                 }
 
-            ]
 
+            ]
+        },
+        { //list body
+            layout:'vbox',
+            flex:1,
+            items:'@{todoList}'
         }
+
+
 
     ]
 });
