@@ -12,12 +12,12 @@ glu.regAdapter('checkboxfield', {
 //        config.checked = config.checked || config.value;
     },
     afterCreate:function (control, viewmodel) {
-        control.addListener('check', function () {
-            control.fireEvent('checkedChanged', control);
+        control.addListener('check', function (control) {
+            control.fireEvent('checkedChanged', control, control.getChecked());
         }, control);
 
-        control.addListener('uncheck', function () {
-            control.fireEvent('checkedChanged', control);
+        control.addListener('uncheck', function (control) {
+            control.fireEvent('checkedChanged', control, control.getChecked());
         }, control);
     },
     checkedBindings:{
@@ -25,7 +25,7 @@ glu.regAdapter('checkboxfield', {
             control.setChecked(value)
         },
         eventName:'checkedChanged',
-        eventConverter:function (control) {
+        eventConverter:function (control, newValue) {
             return control.getChecked();
         }
     }

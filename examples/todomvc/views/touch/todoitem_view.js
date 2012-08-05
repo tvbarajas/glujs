@@ -7,22 +7,25 @@ glu.defView('todo.todoitem', {
     items:[
         {
             xtype : 'checkboxfield',
-            value : '@{completed}',
-            width : 20
+            checked : '@{completed}',
+            width : 50,
+            height:40
         },
         {
             xtype:'label',
             width:300,  //flex isn't working for some reason...
+            height:40,
             disabledCls : 'todo-item-completed',
             disabled : '@{completed}',
-            html : {
-                html:'@{text}',
-                width:300,
-                alignment : 'l-l?',
-                field : {
-                    xtype: 'textfield'
-                }
-            }
+            html:'@{text}'
+//            html : {
+//                html:'@{text}',
+//                width:300,
+//                alignment : 'l-l?',
+//                field : {
+//                    xtype: 'textfield'
+//                }
+//            }
         },
         {
             xtype : 'button',
