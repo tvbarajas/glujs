@@ -28,11 +28,15 @@ glu.defView('todo.todoitem', {
 //            }
         },
         {
-            xtype : 'button',
-            width : 20,
-            hidden : '@{!removeIsVisible}',
-            overCls : '',
-            handler : '@{remove}'
+            xtype:'container',
+            width:'20',
+            height:'30',
+            items:[ {
+                xtype : 'button',
+                iconCls: 'delete',
+                iconMask: true,
+                handler : '@{remove}'
+            }]
         }
     ]
 });

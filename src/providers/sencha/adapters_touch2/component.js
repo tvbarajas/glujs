@@ -19,6 +19,9 @@ glu.regAdapter('component', {
     processChildPropertyShortcut:function (propName, config) {
         return config;
     },
+    afterCreate:function (control, viewmodel) {
+
+    },
     checkForEditors:function (config, propConfigs) {
         for (var name in propConfigs) {
             var editor = config[name];

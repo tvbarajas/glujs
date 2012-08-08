@@ -1,6 +1,6 @@
 glu.defView('todo.main', {
     centered:false,
-    scrollable:true,
+
     border:false,
     layout:{
         type:'vbox'
@@ -35,7 +35,7 @@ glu.defView('todo.main', {
                     xtype:'textfield',
                     value:'@{newItemText}',
                     cls:'todo-newItemText',
-                    emptyText:'~~newItemText~~',
+                    placeHolder:'~~newItemText~~',
                     enterKeyHandler:'@{addNewItem}',
                     width:300,
                     height:40
@@ -47,9 +47,33 @@ glu.defView('todo.main', {
         { //list body
             layout:'vbox',
             flex:1,
-            items:'@{todoList}'
-        }
+            scrollable:{
+                direction:'vertical',
+                directionLock:true
+            },
 
+            items:'@{todoList}'
+        },
+        {
+            xtype:'toolbar',
+            height:50,
+            docked:'bottom',
+            items:[
+                {   xtype:'button',
+                    text:'~~all~~',
+                    value:'all'
+                },
+                {
+                    xtype:'button',
+                    text:'~~active~~',
+                    value:'active'
+                },
+                {   xtype:'button',
+                    text:'~~completed~~',
+                    value:'completed'
+                }
+            ]
+        }
 
 
     ]

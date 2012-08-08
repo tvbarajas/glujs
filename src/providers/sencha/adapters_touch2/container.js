@@ -19,7 +19,7 @@ glu.regAdapter('container', {
 
     },
     afterCreate:function (control, viewmodel) {
-
+        glu.provider.adapters.Component.prototype.afterCreate.apply(this, arguments);
     },
     activeItemBindings:{
         setComponentProperty:function (value, oldValue, options, control) {
