@@ -145,18 +145,24 @@ glu.regAdapter('panel', {
         }
         var expandOrCollapseFactory = function(expanded) {
             return function(control) {
-                control.fireEvent('expandorcollapse', control, expanded);
+                if( control.supressCollapseEvents )
+                    return true;
+                control.fireEvent('expandorcollapserequest', control, expanded);
+                return false;
             }
         };
-        control.on('collapse', expandOrCollapseFactory(false));
-        control.on('expand', expandOrCollapseFactory(true));
+
+        if( control._bindingMap.collapsed ){
+            control.on('beforecollapse', expandOrCollapseFactory(false));
+            control.on('beforeexpand', expandOrCollapseFactory(true));
+        }
 
         if (control._bindingMap && control._bindingMap.activeItem!==undefined) {
             control.addActual = control.add;
             control.add = function(index, item) {
                 item.on('render', function() {
                     item.getEl().on('click', function() {
-                        control.fireEvent('activeitemchangerequest', control, control.items.indexOf(item));
+                        control.fireEvent('activeitemchangerequest', control, control.items.indexOf(item), item);
                     });
                 });
                 control.addActual(index, item);
@@ -188,12 +194,13 @@ glu.regAdapter('panel', {
      * **Convention:** @{*foo*IsCollapsed}
      */
     collapsedBindings : {
-        eventName : 'expandorcollapse',
+        eventName : 'expandorcollapserequest',
         eventConverter : function(control, expanded) {
             return !expanded;
         },
         storeValueInComponentAs : 'collapsedActual',
         setComponentProperty : function(value, oldValue, options, control) {
+            control.supressCollapseEvents = true;
             if (value == true) {
                 if (control.rendered) {
                     control.collapse(control.collapseDirection, control.animCollapse);
@@ -208,6 +215,7 @@ glu.regAdapter('panel', {
                     control.collapsed = false;
                 }
             }
+            control.supressCollapseEvents = false;
         }
     },
 
@@ -217,16 +225,36 @@ glu.regAdapter('panel', {
      */
     closableBindings : {
         setComponentProperty : function(value, oldValue, options, control) {
-            if (Ext.getVersion().major > 3 && control.tab) {
+            if (!(Ext.getVersion().major > 3)) return;
+            if (control.tab) {
+                //for a panel in a tab panel
                 control.tab.setClosable(value);
+                return;
+            }
+            if (control.header) {
+                for (var i =0;i<control.header.items.getCount();i++){
+                    var tool = control.header.items.getAt(i);
+                    if (tool.type === 'close') {
+                        tool.setVisible(value);
+                        return;
+                    }
+                }
+                //couldn't find it so add if true
+                if (value===true) {
+                    control.addClsWithUI('closable');
+                    control.addTool({
+                        type: 'close',
+                        handler: Ext.Function.bind(control.close, control, [])
+                    });
+                }
             }
         }
     },
 
     activeItemBindings : {
         eventName:'activeitemchangerequest',
-        eventConverter:function (control, idx) {
-            return control._activeItemValueType==='viewmodel'?control._parentList.getAt(idx):idx;
+        eventConverter:function (control, idx, item) {
+            return control._activeItemValueType==='viewmodel'?item._vm:idx;
         },
         storeValueInComponentAs : '_activeIndex',
         setComponentProperty:function (value, oldValue, options, control) {
